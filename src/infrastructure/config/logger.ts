@@ -1,9 +1,11 @@
 import winston from 'winston';
+import path from 'path';
 
 export class Logger {
     private logger: winston.Logger;
 
     constructor() {
+        const logDir = path.join(__dirname, '../../../logs');
         this.logger = winston.createLogger({
             levels: {
                 error: 0,
@@ -14,16 +16,25 @@ export class Logger {
             },
             level: 'debug',
             format: winston.format.combine(
-                winston.format.colorize(),
+                // winston.format.colorize(),
                 winston.format.timestamp(),
-                winston.format.printf(({ timestamp, level, message }) => {
-                    return `${timestamp} [${level.toUpperCase()}]: ${message}`;
-                })
+                winston.format.json(),
+                // winston.format.printf(({ timestamp, level, message }) => {
+                //     return `date: ${timestamp}, level: [${level.toUpperCase()}], message: ${message}`;
+                // })
             ),
             transports: [
-                new winston.transports.Console(),
-                new winston.transports.File({ filename: 'errors.log', level: 'error' }),
-                new winston.transports.File({ filename: 'combined.log' }),
+                new winston.transports.Console({
+                    format: winston.format.combine(
+                        // winston.format.colorize(),
+                        winston.format.timestamp(),
+                        // winston.format.printf(({ timestamp, level, message }) => {
+                        //     return `date: ${timestamp}, level: [${level.toUpperCase()}], message: ${message}`;
+                        // })
+                    ),
+                }),
+                new winston.transports.File({ filename: `${logDir}/errors.log`, level: 'error' }),
+                new winston.transports.File({ filename: `${logDir}/combined.log` }),
             ]
         })
     }

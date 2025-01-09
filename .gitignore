@@ -5,6 +5,7 @@
 /mongo
 /postgres
 node_modules/
+logs/
 dist/
 build/
 coverage/
