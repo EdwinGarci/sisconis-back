@@ -1,5 +1,4 @@
-import { envs } from '../infrastructure/config';
-import { ExpressServer } from '../infrastructure/server/express-server';
+import { envs, ExpressServer } from '../infrastructure';
 import { AppRoutes } from './routes';
 
 
