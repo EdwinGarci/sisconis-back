@@ -48,12 +48,12 @@ export class ExpressServer {
 
     public async start(): Promise<void> {
         this.serverListener = this.app.listen(this.port, () => {
-            this.logger.logInfo(`Server running on port ${this.port}`);
+            this.logger.logInfo(`Server running on port ${this.port}`, 'express-server.ts');
         });
     }
 
     public close(): void {
-        this.logger.logInfo('Server shutting down...');
+        this.logger.logInfo('Server shutting down...', 'express-server.ts');
         this.serverListener?.close();
     }
 }

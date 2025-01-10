@@ -1,10 +1,20 @@
+import { PrismaClient, SeverityLevel } from '@prisma/client';
 import winston from 'winston';
 import path from 'path';
 
+interface LogOptions {
+    message: string;
+    origin?: string;
+    userId?: number;
+    ipAddress?: string;
+}
+
 export class Logger {
     private logger: winston.Logger;
+    private prisma: PrismaClient;
 
     constructor() {
+        this.prisma = new PrismaClient();
         const logDir = path.join(__dirname, '../../../logs');
         this.logger = winston.createLogger({
             levels: {
@@ -16,21 +26,13 @@ export class Logger {
             },
             level: 'debug',
             format: winston.format.combine(
-                // winston.format.colorize(),
                 winston.format.timestamp(),
                 winston.format.json(),
-                // winston.format.printf(({ timestamp, level, message }) => {
-                //     return `date: ${timestamp}, level: [${level.toUpperCase()}], message: ${message}`;
-                // })
             ),
             transports: [
                 new winston.transports.Console({
                     format: winston.format.combine(
-                        // winston.format.colorize(),
                         winston.format.timestamp(),
-                        // winston.format.printf(({ timestamp, level, message }) => {
-                        //     return `date: ${timestamp}, level: [${level.toUpperCase()}], message: ${message}`;
-                        // })
                     ),
                 }),
                 new winston.transports.File({ filename: `${logDir}/errors.log`, level: 'error' }),
@@ -38,24 +40,42 @@ export class Logger {
             ]
         })
     }
-
-    logInfo(message: string): void {
-        this.logger.info(message);
+    
+    private async log(level: SeverityLevel, options: LogOptions): Promise<void> {
+        const origin = options.origin || 'unknown' 
+        this.logger.log(level, options.message);
+        try {
+            await this.prisma.logModel.create({
+                data: { ...options, level, origin },
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                this.logger.error('Failed to log to database: ' + error.message);
+            }
+        }
     }
 
-    logError(message: string): void {
-        this.logger.error(message);
+    async logInfo(message: string, origin?: string): Promise<void> {
+        await this.log('info', {message, origin});
     }
 
-    logWarning(message: string): void {
-        this.logger.warn(message);
+    async logError(message: string): Promise<void> {
+        await this.log('error', {message, origin});
     }
 
-    logDebug(message: string): void {
-        this.logger.debug(message);
+    async logWarning(message: string): Promise<void> {
+        await this.log('warn', {message, origin});
     }
 
-    logHttp(message: string): void {
-        this.logger.log('http', message);
+    async logDebug(message: string): Promise<void> {
+        await this.log('debug', {message, origin});
+    }
+
+    async logHttp(message: string): Promise<void> {
+        await this.log('http', {message, origin});
+    }
+
+    async close(): Promise<void> {
+        await this.prisma.$disconnect();
     }
 }
