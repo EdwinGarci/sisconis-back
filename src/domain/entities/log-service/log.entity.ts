@@ -15,10 +15,10 @@ export interface LogEntityOptions {
 }
 
 export class LogEntity {
-    public level: LogSeverityLevel;
-    public message: string;
-    public createdAt: Date;
-    public origin: string;
+    public readonly level: LogSeverityLevel;
+    public readonly message: string;
+    public readonly createdAt: Date;
+    public readonly origin: string;
 
     constructor(options: LogEntityOptions) {
         const {level, message, createdAt = new Date(), origin } = options
@@ -32,14 +32,12 @@ export class LogEntity {
         json = (json === '') ?  '{}' : json;
         const {message, level, createdAt, origin} = JSON.parse(json);
 
-        const log = new LogEntity({
+        return new LogEntity({
             message, 
             level,
             createdAt: new Date(createdAt),
             origin,
         });
-        log.createdAt = new Date(createdAt);
-        return log;
     }
 
     static fromObject = (object: {[key: string]: any}): LogEntity => {
