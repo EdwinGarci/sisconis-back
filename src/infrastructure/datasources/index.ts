@@ -1,1 +1,2 @@
-export * from './log-service/log.datasource';
+export * from './log-service/postgres-log.datasource.impl';
+export * from './log-service/mysql-log.datasource.impl';

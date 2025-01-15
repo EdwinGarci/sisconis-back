@@ -1,2 +1,2 @@
-export * from './create-log'
-export * from './get-logs'
+export * from './save-log.use-case'
+export * from './get-logs.use-case'

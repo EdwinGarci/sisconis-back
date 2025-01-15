@@ -1,11 +1,14 @@
 import express, { Router, Application } from 'express';
 import path from 'path';
-import { Logger } from '../config';
+import { logger } from '../config'
+import { SaveLogUseCase } from '../../application';
+import { LogSeverityLevel } from '../../domain';
 
 interface ExpressServerOptions {
     routes: Router;
     port: number;
     publicPath?: string;
+    saveLogUseCase: SaveLogUseCase
 }
 
 export class ExpressServer {
@@ -13,18 +16,19 @@ export class ExpressServer {
     private readonly port: number;
     private readonly publicPath: string;
     private readonly routes: Router;
-    private readonly logger: Logger;
+    private readonly logger: typeof logger;
+    private readonly saveLogUseCase: SaveLogUseCase;
     private serverListener?: any;
 
     constructor(options: ExpressServerOptions) {
         this.app = express();
-        const { routes, port, publicPath = 'public' } = options;
+        const { routes, port, publicPath = 'public', saveLogUseCase } = options;
 
         this.port = port;
         this.routes = routes;
         this.publicPath = publicPath;
-
-        this.logger = new Logger();
+        this.saveLogUseCase = saveLogUseCase;
+        this.logger = logger;
 
         this.setupMiddlewares();
         this.setupRoutes();
@@ -47,13 +51,25 @@ export class ExpressServer {
     }
 
     public async start(): Promise<void> {
-        this.serverListener = this.app.listen(this.port, () => {
-            this.logger.logInfo(`Server running on port ${this.port}`, 'express-server.ts');
+        this.serverListener = this.app.listen(this.port, async() => {
+            const logMessage = `Server running on port ${this.port}`;
+            this.logger.info(logMessage);
+            await this.saveLogUseCase.execute({
+                message: logMessage,
+                level: LogSeverityLevel.info,
+                origin: 'express-server.ts'
+            });
         });
     }
 
     public close(): void {
-        this.logger.logInfo('Server shutting down...', 'express-server.ts');
+        const logMessage = 'Server shutting down...';
+        this.logger.info(logMessage);
+        this.saveLogUseCase.execute({
+            message: logMessage,
+            level: LogSeverityLevel.info,
+            origin: 'express-server.ts'
+        })
         this.serverListener?.close();
     }
 }
