@@ -1,8 +1,8 @@
 import { SaveLogUseCase } from '../application';
-import { envs, ExpressServer, LogRepositoryImpl, PostgresLogDatasource } from '../infrastructure';
+import { createLogDatasource, envs, ExpressServer, LogRepositoryImpl } from '../infrastructure';
 import { AppRoutes } from './routes';
 
-const logDataSource = new PostgresLogDatasource();
+const logDataSource = createLogDatasource();
 const logRepository = new LogRepositoryImpl(logDataSource);
 const saveLogUseCase = new SaveLogUseCase(logRepository);
 
