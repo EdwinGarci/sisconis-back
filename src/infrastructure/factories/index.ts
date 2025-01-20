@@ -1,1 +1,1 @@
-export * from './log.datasource.factory';
+export * from './datasource.factory';

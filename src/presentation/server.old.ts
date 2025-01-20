@@ -1,22 +1,20 @@
 import { SaveLogUseCase } from '../application';
-import { envs, ExpressServer } from '../infrastructure';
+import { createLogDatasource, envs, ExpressServer, LogRepositoryImpl } from '../infrastructure';
 import { AppRoutes } from './routes';
 
-interface Dependencies {
-    saveLogUseCase: SaveLogUseCase;
-}
+const logDataSource = createLogDatasource();
+const logRepository = new LogRepositoryImpl(logDataSource);
+const saveLogUseCase = new SaveLogUseCase(logRepository);
 
 export class Server {
     private readonly transportServer: ExpressServer;
 
-    constructor(
-        private readonly dependencies: Dependencies,
-    ) {
+    constructor() {
         this.transportServer = new ExpressServer({
             port: envs.PORT,
             routes: AppRoutes.routes,
             publicPath: envs.PUBLIC_PATH,
-            saveLogUseCase: dependencies.saveLogUseCase,
+            saveLogUseCase,
         });
     }
 

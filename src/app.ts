@@ -1,10 +1,12 @@
-import { Server } from "./presentation/server";
+import { createDependencies } from './infrastructure';
+import { Server } from './presentation/server';
 
 (async () => {
     main();
 })();
 
 async function main() {
-    const server = new Server();
+    const dependencies = createDependencies();
+    const server = new Server(dependencies);
     server.start();
 }
