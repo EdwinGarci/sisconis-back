@@ -36,3 +36,27 @@ model LogModel {
   @@index([level])
   @@index([createdAt])
 }
+
+model User {
+  id             Int       @id @default(autoincrement())
+  firstname      String
+  middlename     String?
+  fatherlastname String
+  matherlastname String
+  username       String    @unique
+  password       String
+  role           String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+  deletedAt      DateTime?
+  createdBy      String?
+  updatedBy      String?
+  deletedBy      String?
+
+  // Relaciones
+  logs          LogModel[] @relation("UserLogs", fields: [id], references: [userId])
+
+  // Índices
+  @@index([username])
+  @@index([role])
+}

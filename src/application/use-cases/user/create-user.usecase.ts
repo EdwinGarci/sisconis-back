@@ -1,5 +1,6 @@
-import { CustomError, UserEntity, UserRepository } from "../../../domain";
+import { UserEntity, UserRepository } from "../../../domain";
 import { CreateUserDto } from "../../dto";
+import { ApplicationError } from "../../errors";
 
 export class CreateUserUseCase {
     constructor(
@@ -11,9 +12,9 @@ export class CreateUserUseCase {
             const user = new UserEntity({
                 ...dto
             });
-            return this.userRepository.create(user);
+            return await this.userRepository.create(user);
         } catch (error) {
-            throw CustomError.badRequest(`${error}`); 
+            throw new ApplicationError(`${error}`); 
         }
     }
 }
