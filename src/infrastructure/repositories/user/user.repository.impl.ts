@@ -6,7 +6,7 @@ export class UserRepositoryImpl implements UserRepository {
     ) {}
     
     async create(user: UserEntity): Promise<UserEntity> {
-        throw new Error("Method not implemented.");
+        return this.userDatasource.createUser(user);
     }
     
     async findAll(filters?: { limit?: number; offset?: number; query?: string; }): Promise<{ users: UserEntity[]; total: number; }> {

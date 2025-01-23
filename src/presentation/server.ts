@@ -1,5 +1,5 @@
 import { SaveLogUseCase } from '../application';
-import { envs, ExpressServer } from '../infrastructure';
+import { envs, ExpressServer, ExpressRouterAdapter } from '../infrastructure';
 import { AppRoutes } from './routes';
 
 interface Dependencies {
@@ -12,9 +12,12 @@ export class Server {
     constructor(
         private readonly dependencies: Dependencies,
     ) {
+        const expressRouterAdapter = new ExpressRouterAdapter();
+        AppRoutes.configureRoutes(expressRouterAdapter);
+
         this.transportServer = new ExpressServer({
             port: envs.PORT,
-            routes: AppRoutes.routes,
+            routes: expressRouterAdapter,
             publicPath: envs.PUBLIC_PATH,
             saveLogUseCase: dependencies.saveLogUseCase,
         });

@@ -1,11 +1,11 @@
-import express, { Router, Application } from 'express';
+import express, { Application } from 'express';
 import path from 'path';
 import { logger } from '../config'
-import { SaveLogUseCase } from '../../application';
+import { IRouter, SaveLogUseCase } from '../../application';
 import { LogSeverityLevel } from '../../domain';
 
 interface ExpressServerOptions {
-    routes: Router;
+    routes: IRouter;
     port: number;
     publicPath?: string;
     saveLogUseCase: SaveLogUseCase
@@ -15,7 +15,7 @@ export class ExpressServer {
     private readonly app: Application;
     private readonly port: number;
     private readonly publicPath: string;
-    private readonly routes: Router;
+    private readonly routes: IRouter;
     private readonly logger: typeof logger;
     private readonly saveLogUseCase: SaveLogUseCase;
     private serverListener?: any;
@@ -41,7 +41,8 @@ export class ExpressServer {
     }
 
     private setupRoutes(): void {
-        this.app.use(this.routes);
+        const expressRouter = (this.routes as any).getExpressRouter();
+        this.app.use(expressRouter);
 
         // Manejo para SPA: redirige rutas no API a `index.html`.
         this.app.get(/^\/(?!api).*/, (req, res) => {
