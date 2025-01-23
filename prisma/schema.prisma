@@ -29,8 +29,11 @@ model LogModel {
   createdAt  DateTime  @default(now())
 
   // Opcionales (En este caso es para trazabilidad)
-  userId     Int?
+  userId     String?  @db.Uuid
   ipAddress  String?
+
+  // Relación con User
+  user       User?     @relation("UserLogs", fields: [userId], references: [id])
 
   // Índices para mejorar consultas
   @@index([level])
@@ -38,7 +41,7 @@ model LogModel {
 }
 
 model User {
-  id             Int       @id @default(autoincrement())
+  id             String    @id @default(uuid()) @db.Uuid
   firstname      String
   middlename     String?
   fatherlastname String
@@ -54,7 +57,7 @@ model User {
   deletedBy      String?
 
   // Relaciones
-  logs          LogModel[] @relation("UserLogs", fields: [id], references: [userId])
+  logs          LogModel[] @relation("UserLogs")
 
   // Índices
   @@index([username])
