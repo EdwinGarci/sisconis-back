@@ -74,8 +74,8 @@ export class UserEntity extends BaseEntity {
         return JSON.stringify(this.toObject());
     }
 
-    public toObject(): { [key: string]: any } {
-        return {
+    public toObject(includePassword = false): { [key: string]: any } {
+        const baseObject: { [key: string]: any } = {
             ...super.toBaseObject(),
             firstname: this.firstname,
             middlename: this.middlename,
@@ -84,6 +84,12 @@ export class UserEntity extends BaseEntity {
             username: this.username,
             role: this.role,
         };
+
+        if (includePassword) {
+            baseObject.password = this._password;
+        }
+        
+        return baseObject;
     }
 
     static fromJson(json: string): UserEntity {

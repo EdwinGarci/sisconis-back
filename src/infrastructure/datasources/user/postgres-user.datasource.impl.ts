@@ -1,31 +1,39 @@
 import { PrismaClient } from "@prisma/client";
 import { Role, UserDatasource, UserEntity } from "../../../domain";
 import { CustomError } from "../../errors";
+import { bcryptAdapter } from "../../config";
 
 const prismaClient = new PrismaClient();
 
 export class PostgresUserDatasource implements UserDatasource {
     async createUser(user: UserEntity): Promise<UserEntity> {
-        throw new Error("Method not implemented.");
-        // try {
-        //     const newUser = await prismaClient.user.create({
-        //         data: {
-        //             id: user.id, // Asegúrate de que `user.id` sea generado antes de llamar a este método
-        //             firstname: user.firstname,
-        //             middlename: user.middlename || null,
-        //             fatherlastname: user.fatherlastname,
-        //             matherlastname: user.matherlastname,
-        //             username: user.username,
-        //             password: user.toObject(true)._password, // Incluye contraseña cifrada
-        //             role: user.role,
-        //             createdAt: user.createdAt,
-        //             updatedAt: user.updatedAt,
-        //         }
-        //     });
-        //     return UserEntity.fromObject({ ...newUser, password: newUser })
-        // } catch (error) {
-        //     throw CustomError.badRequest(`Failed to create user: ${error.message}`);
-        // }
+        try {
+            const hashedPassword = bcryptAdapter.hash(user.toObject(true).password);
+            const newUser = await prismaClient.user.create({
+                data: {
+                    firstname: user.firstname,
+                    middlename: user.middlename ?? null,
+                    fatherlastname: user.fatherlastname,
+                    matherlastname: user.matherlastname,
+                    username: user.username,
+                    password: hashedPassword,
+                    role: user.role,
+                }
+            });
+            return UserEntity.fromObject({ 
+                ...newUser,
+                middlename: newUser.middlename || undefined,
+                password: hashedPassword,
+                role: newUser.role as Role,
+                updatedAt: newUser.updatedAt || undefined,
+                deletedAt: newUser.deletedAt || undefined,
+                createdBy: newUser.createdBy || undefined,
+                updatedBy: newUser.updatedBy || undefined,
+                deletedBy: newUser.deletedBy || undefined,
+            })
+        } catch (error) {
+            throw CustomError.badRequest(`Failed to create user: ${(error as any).message}`);
+        }
     }
 
     getUsers(filters?: { limit?: number; offset?: number; query?: string; }): Promise<{ users: UserEntity[]; total: number; }> {
