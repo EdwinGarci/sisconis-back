@@ -8,7 +8,7 @@ const prismaClient = new PrismaClient();
 export class PostgresUserDatasource implements UserDatasource {
     async createUser(user: UserEntity): Promise<UserEntity> {
         try {
-            const hashedPassword = bcryptAdapter.hash(user.toObject(true).password);
+            const hashedPassword = bcryptAdapter.hash(user.getPassword());
             const newUser = await prismaClient.user.create({
                 data: {
                     firstname: user.firstname,
@@ -23,7 +23,7 @@ export class PostgresUserDatasource implements UserDatasource {
             return UserEntity.fromObject({ 
                 ...newUser,
                 middlename: newUser.middlename || undefined,
-                password: hashedPassword,
+                // password: hashedPassword,
                 role: newUser.role as Role,
                 updatedAt: newUser.updatedAt || undefined,
                 deletedAt: newUser.deletedAt || undefined,

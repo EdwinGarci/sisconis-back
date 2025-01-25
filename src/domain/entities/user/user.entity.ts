@@ -1,5 +1,5 @@
 import { DomainError } from "../../errors";
-import { FullName } from "../../value-object";
+// import { FullName } from "../../value-object";
 import { BaseEntity, BaseEntityOptions } from "../shared/base.entity";
 
 export enum Role {
@@ -26,7 +26,7 @@ export class UserEntity extends BaseEntity {
     public readonly middlename?: string;
     public readonly matherlastname: string;
     public readonly fatherlastname: string;
-    public readonly fullName: FullName;
+    // public readonly fullName: FullName;
     public readonly username: string;
     private readonly _password: string;
     public readonly role: Role;
@@ -34,7 +34,7 @@ export class UserEntity extends BaseEntity {
     constructor(options: UserEntityOptions) {
         super(options);
 
-        this.fullName = new FullName(options.firstname, options.fatherlastname, options.matherlastname, options.middlename);
+        // this.fullName = new FullName(options.firstname, options.fatherlastname, options.matherlastname, options.middlename);
         this.validateOptions(options);
         this.validateUsername(options.username);
         this.validateRole(options.role);
@@ -63,11 +63,15 @@ export class UserEntity extends BaseEntity {
     }
 
     private validateRole(role: Role): void {
-        if (!Object.values(Role).includes(role)) throw new DomainError(`Invalid role: ${role}`);
+        if (!Object.keys(Role).includes(role)) throw new DomainError(`Invalid role: ${role}`);
     }
 
-    public getFullName(): string {
-        return this.fullName.getFullName();
+    // public getFullName(): string {
+    //     return this.fullName.getFullName();
+    // }
+
+    public getPassword(): string {
+        return this._password;
     }
 
     public toJson(): string {

@@ -12,8 +12,10 @@ export class UserController {
             const createUserDto = CreateUserDto.create(req.body);
             
             const user = await this.createUserUseCase.execute(createUserDto);
+
+            const userResponse = user.toObject(false);
             
-            res.status(201).json({message: 'User created successfully', user: user});
+            res.status(201).json({message: 'User created successfully', user: userResponse});
         } catch (error) {
             if (error instanceof CustomError) {
                 res.status(error.statusCode).json({ error: error.message });

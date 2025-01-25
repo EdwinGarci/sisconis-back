@@ -45,12 +45,12 @@ export class CreateUserDto {
 
         return new CreateUserDto(
             firstname.trim(), 
-            middlename?.trim(), 
             fatherlastname.trim(), 
             matherlastname.trim(), 
             username.trim(), 
             password, 
             role, 
+            middlename?.trim(), 
             createdAt, 
             updatedAt, 
             deletedAt, 
