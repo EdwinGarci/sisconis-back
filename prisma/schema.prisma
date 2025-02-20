@@ -45,7 +45,7 @@ model User {
   firstname      String
   middlename     String?
   fatherlastname String
-  matherlastname String
+  motherlastname String
   username       String    @unique
   password       String
   role           String

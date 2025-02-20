@@ -14,7 +14,7 @@ export class PostgresUserDatasource implements UserDatasource {
                     firstname: user.firstname,
                     middlename: user.middlename ?? null,
                     fatherlastname: user.fatherlastname,
-                    matherlastname: user.matherlastname,
+                    motherlastname: user.motherlastname,
                     username: user.username,
                     password: hashedPassword,
                     role: user.role,

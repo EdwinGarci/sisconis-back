@@ -15,7 +15,7 @@ export interface UserEntityOptions extends BaseEntityOptions {
     firstname: string;
     middlename?: string;
     fatherlastname: string;
-    matherlastname: string;
+    motherlastname: string;
     username: string;
     password: string;
     role: Role;
@@ -24,7 +24,7 @@ export interface UserEntityOptions extends BaseEntityOptions {
 export class UserEntity extends BaseEntity {
     public readonly firstname: string;
     public readonly middlename?: string;
-    public readonly matherlastname: string;
+    public readonly motherlastname: string;
     public readonly fatherlastname: string;
     // public readonly fullName: FullName;
     public readonly username: string;
@@ -34,16 +34,16 @@ export class UserEntity extends BaseEntity {
     constructor(options: UserEntityOptions) {
         super(options);
 
-        // this.fullName = new FullName(options.firstname, options.fatherlastname, options.matherlastname, options.middlename);
+        // this.fullName = new FullName(options.firstname, options.fatherlastname, options.motherlastname, options.middlename);
         this.validateOptions(options);
         this.validateUsername(options.username);
         this.validateRole(options.role);
         
-        const { firstname, middlename, fatherlastname, matherlastname, username, password, role } = options;
+        const { firstname, middlename, fatherlastname, motherlastname, username, password, role } = options;
         
         this.firstname = firstname.trim();
         this.middlename = middlename ? middlename.trim() : undefined;
-        this.matherlastname = matherlastname.trim();
+        this.motherlastname = motherlastname.trim();
         this.fatherlastname = fatherlastname.trim();
         this.username = username.toLowerCase().trim();
         this._password = password;
@@ -53,7 +53,7 @@ export class UserEntity extends BaseEntity {
     private validateOptions(options: UserEntityOptions): void {
         if (!options.firstname?.trim()) throw new DomainError('FirstName is required');
         if (!options.fatherlastname?.trim()) throw new DomainError('Father Lastname is required');
-        if (!options.matherlastname?.trim()) throw new DomainError('Mather Lastname is required');
+        if (!options.motherlastname?.trim()) throw new DomainError('Mather Lastname is required');
         if (!options.password?.trim()) throw new DomainError('Password is required');
     }
 
@@ -84,7 +84,7 @@ export class UserEntity extends BaseEntity {
             firstname: this.firstname,
             middlename: this.middlename,
             fatherlastname: this.fatherlastname,
-            matherlastname: this.matherlastname,
+            motherlastname: this.motherlastname,
             username: this.username,
             role: this.role,
         };
@@ -106,15 +106,15 @@ export class UserEntity extends BaseEntity {
     }
 
     static fromObject(object: Partial<UserEntityOptions>): UserEntity {
-        const { firstname = '', middlename, fatherlastname = '', matherlastname = '', username = '', password = '', role = Role.USER, createdAt, updatedAt, deletedAt, createdBy, updatedBy, deletedBy} = object;
-        if (!firstname || !fatherlastname || !matherlastname) {
+        const { firstname = '', middlename, fatherlastname = '', motherlastname = '', username = '', password = '', role = Role.USER, createdAt, updatedAt, deletedAt, createdBy, updatedBy, deletedBy} = object;
+        if (!firstname || !fatherlastname || !motherlastname) {
             throw new DomainError('Missing required user details.');
         }        
         return new UserEntity({
             firstname, 
             middlename,
             fatherlastname, 
-            matherlastname, 
+            motherlastname, 
             username,
             password,
             role,

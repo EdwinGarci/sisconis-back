@@ -1,12 +1,18 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "SeverityLevel" AS ENUM ('error', 'warn', 'info', 'http', 'debug');
 
-  - The `userId` column on the `LogModel` table would be dropped and recreated. This will lead to data loss if there is data in the column.
+-- CreateTable
+CREATE TABLE "LogModel" (
+    "id" SERIAL NOT NULL,
+    "message" TEXT NOT NULL,
+    "origin" TEXT NOT NULL,
+    "level" "SeverityLevel" NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "userId" UUID,
+    "ipAddress" TEXT,
 
-*/
--- AlterTable
-ALTER TABLE "LogModel" DROP COLUMN "userId",
-ADD COLUMN     "userId" UUID;
+    CONSTRAINT "LogModel_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -14,7 +20,7 @@ CREATE TABLE "User" (
     "firstname" TEXT NOT NULL,
     "middlename" TEXT,
     "fatherlastname" TEXT NOT NULL,
-    "matherlastname" TEXT NOT NULL,
+    "motherlastname" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" TEXT NOT NULL,
@@ -27,6 +33,12 @@ CREATE TABLE "User" (
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE INDEX "LogModel_level_idx" ON "LogModel"("level");
+
+-- CreateIndex
+CREATE INDEX "LogModel_createdAt_idx" ON "LogModel"("createdAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");

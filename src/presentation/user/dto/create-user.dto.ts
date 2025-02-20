@@ -5,7 +5,7 @@ export class CreateUserDto {
     private constructor(
         public readonly firstname: string,
         public readonly fatherlastname: string,
-        public readonly matherlastname: string,
+        public readonly motherlastname: string,
         public readonly username: string,
         public readonly password: string,
         public readonly role: Role,
@@ -19,7 +19,7 @@ export class CreateUserDto {
     ) { }
 
     static create(object: { [key: string]: any }): CreateUserDto {
-        const { firstname, middlename, fatherlastname, matherlastname, username, password, role, createdAt, updatedAt, deletedAt, createdBy, updatedBy, deletedBy } = object;
+        const { firstname, middlename, fatherlastname, motherlastname, username, password, role, createdAt, updatedAt, deletedAt, createdBy, updatedBy, deletedBy } = object;
 
         if (!firstname?.trim()) {
             throw CustomError.badRequest('Firstname is required.');
@@ -27,7 +27,7 @@ export class CreateUserDto {
         if (!fatherlastname?.trim()) {
             throw CustomError.badRequest('Father lastname is required.');
         }
-        if (!matherlastname?.trim()) {
+        if (!motherlastname?.trim()) {
             throw CustomError.badRequest('Mother lastname is required.');
         }
         if (!username?.trim()) {
@@ -46,7 +46,7 @@ export class CreateUserDto {
         return new CreateUserDto(
             firstname.trim(), 
             fatherlastname.trim(), 
-            matherlastname.trim(), 
+            motherlastname.trim(), 
             username.trim(), 
             password, 
             role, 
