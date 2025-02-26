@@ -1,14 +1,15 @@
-import { DomainError } from "../../errors";
-// import { FullName } from "../../value-object";
+import { DomainError, RequiredFieldError, InvalidUsernameError, InvalidRoleError } from "../../errors";
+import { DomainResult, Result, domainFailure, domainSuccess } from "../../shared";
+import { FullName } from "../../value-object";
 import { BaseEntity, BaseEntityOptions } from "../shared/base.entity";
 
 export enum Role {
-    ADMIN_SYSTEM = 'Administrador del Sistema',
-    USER = 'Usuario',
-    VIGILANT = 'Vigilante',
-    ADMIN = 'Administrador',
-    DIRECTOR = 'Director',
-    RRHH = 'Jefe de Recursos Humanos'
+    ADMIN_SYSTEM = "Administrador del Sistema",
+    USER = "Usuario",
+    VIGILANT = "Vigilante",
+    ADMIN = "Administrador",
+    DIRECTOR = "Director",
+    RRHH = "Jefe de Recursos Humanos",
 }
 
 export interface UserEntityOptions extends BaseEntityOptions {
@@ -22,69 +23,63 @@ export interface UserEntityOptions extends BaseEntityOptions {
 }
 
 export class UserEntity extends BaseEntity {
-    public readonly firstname: string;
-    public readonly middlename?: string;
-    public readonly motherlastname: string;
-    public readonly fatherlastname: string;
-    // public readonly fullName: FullName;
+    public readonly fullName: FullName;
     public readonly username: string;
     private readonly _password: string;
     public readonly role: Role;
 
-    constructor(options: UserEntityOptions) {
+    private constructor(options: UserEntityOptions, fullName: FullName) {
         super(options);
-
-        // this.fullName = new FullName(options.firstname, options.fatherlastname, options.motherlastname, options.middlename);
-        this.validateOptions(options);
-        this.validateUsername(options.username);
-        this.validateRole(options.role);
-        
-        const { firstname, middlename, fatherlastname, motherlastname, username, password, role } = options;
-        
-        this.firstname = firstname.trim();
-        this.middlename = middlename ? middlename.trim() : undefined;
-        this.motherlastname = motherlastname.trim();
-        this.fatherlastname = fatherlastname.trim();
-        this.username = username.toLowerCase().trim();
-        this._password = password;
-        this.role = role;
+        this.fullName = fullName;
+        this.username = options.username.toLowerCase().trim();
+        this._password = options.password;
+        this.role = options.role;
     }
 
-    private validateOptions(options: UserEntityOptions): void {
-        if (!options.firstname?.trim()) throw new DomainError('FirstName is required');
-        if (!options.fatherlastname?.trim()) throw new DomainError('Father Lastname is required');
-        if (!options.motherlastname?.trim()) throw new DomainError('Mather Lastname is required');
-        if (!options.password?.trim()) throw new DomainError('Password is required');
+    public static create(options: UserEntityOptions): DomainResult<UserEntity> {
+        const fullNameResult = FullName.create(
+            options.firstname,
+            options.fatherlastname,
+            options.motherlastname,
+            options.middlename
+        );
+
+        if (!fullNameResult.isSuccess) {
+            return domainFailure(fullNameResult.error!);
+        }
+
+        if (!options.password.trim()) {
+            return domainFailure(new RequiredFieldError("Password"));
+        }
+
+        if (!UserEntity.isValidUsername(options.username)) {
+            return domainFailure(new InvalidUsernameError());
+        }
+
+        if (!(options.role in Role)) {
+            return domainFailure(new InvalidRoleError(options.role));
+        }
+
+        return domainSuccess(new UserEntity(options, fullNameResult.value!));
     }
 
-    private validateUsername(username: string): void {
+    private static isValidUsername(username: string): boolean {
         const usernameRegex = /^[a-zA-Z0-9_]{4,20}$/;
-        if (!usernameRegex.test(username)) throw new DomainError('Invalid username format.');
+        return usernameRegex.test(username);
     }
 
-    private validateRole(role: Role): void {
-        if (!Object.keys(Role).includes(role)) throw new DomainError(`Invalid role: ${role}`);
+    public getFullName(): string {
+        return this.fullName.getFullName();
     }
-
-    // public getFullName(): string {
-    //     return this.fullName.getFullName();
-    // }
 
     public getPassword(): string {
         return this._password;
     }
 
-    public toJson(): string {
-        return JSON.stringify(this.toObject());
-    }
-
     public toObject(includePassword = false): { [key: string]: any } {
         const baseObject: { [key: string]: any } = {
             ...super.toBaseObject(),
-            firstname: this.firstname,
-            middlename: this.middlename,
-            fatherlastname: this.fatherlastname,
-            motherlastname: this.motherlastname,
+            fullName: this.getFullName(),
             username: this.username,
             role: this.role,
         };
@@ -92,39 +87,32 @@ export class UserEntity extends BaseEntity {
         if (includePassword) {
             baseObject.password = this._password;
         }
-        
+
         return baseObject;
     }
 
-    static fromJson(json: string): UserEntity {
-        try {
-            const object = JSON.parse(json || '{}');
-            return UserEntity.fromObject(object);
-        } catch (error) {
-            throw new Error('Invalid JSON format.');
+    public static fromObject(object: Partial<UserEntityOptions>): DomainResult<UserEntity> {
+        const requiredFields = ["firstname", "fatherlastname", "motherlastname", "username", "password"];
+        for (const field of requiredFields) {
+            if (!object[field as keyof UserEntityOptions]) {
+                return domainFailure(new RequiredFieldError(field));
+            }
         }
-    }
 
-    static fromObject(object: Partial<UserEntityOptions>): UserEntity {
-        const { firstname = '', middlename, fatherlastname = '', motherlastname = '', username = '', password = '', role = Role.USER, createdAt, updatedAt, deletedAt, createdBy, updatedBy, deletedBy} = object;
-        if (!firstname || !fatherlastname || !motherlastname) {
-            throw new DomainError('Missing required user details.');
-        }        
-        return new UserEntity({
-            firstname, 
-            middlename,
-            fatherlastname, 
-            motherlastname, 
-            username,
-            password,
-            role,
-            createdAt,
-            updatedAt,
-            deletedAt,
-            createdBy,
-            updatedBy,
-            deletedBy,
+        return UserEntity.create({
+            firstname: object.firstname!,
+            middlename: object.middlename,
+            fatherlastname: object.fatherlastname!,
+            motherlastname: object.motherlastname!,
+            username: object.username!,
+            password: object.password!,
+            role: object.role || Role.USER,
+            createdAt: object.createdAt,
+            updatedAt: object.updatedAt,
+            deletedAt: object.deletedAt,
+            createdBy: object.createdBy,
+            updatedBy: object.updatedBy,
+            deletedBy: object.deletedBy,
         });
     }
 }
-

@@ -11,16 +11,16 @@ export class PostgresUserDatasource implements UserDatasource {
             const hashedPassword = bcryptAdapter.hash(user.getPassword());
             const newUser = await prismaClient.user.create({
                 data: {
-                    firstname: user.firstname,
-                    middlename: user.middlename ?? null,
-                    fatherlastname: user.fatherlastname,
-                    motherlastname: user.motherlastname,
+                    firstname: user.fullName.firstname,
+                    middlename: user.fullName.middlename ?? null,
+                    fatherlastname: user.fullName.fatherlastname,
+                    motherlastname: user.fullName.motherlastname,
                     username: user.username,
                     password: hashedPassword,
                     role: user.role,
                 }
             });
-            return UserEntity.fromObject({ 
+            const userResult = UserEntity.fromObject({ 
                 ...newUser,
                 middlename: newUser.middlename || undefined,
                 // password: hashedPassword,
@@ -30,7 +30,13 @@ export class PostgresUserDatasource implements UserDatasource {
                 createdBy: newUser.createdBy || undefined,
                 updatedBy: newUser.updatedBy || undefined,
                 deletedBy: newUser.deletedBy || undefined,
-            })
+            });
+
+            if (!userResult.isSuccess) {
+                throw CustomError.badRequest(userResult.error?.message || "Unknown error occurred");
+            }            
+
+            return userResult.value!;
         } catch (error) {
             throw CustomError.badRequest(`Failed to create user: ${(error as any).message}`);
         }

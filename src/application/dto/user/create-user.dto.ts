@@ -1,5 +1,6 @@
 import { Role } from "../../../domain";
-import { ApplicationError } from "../../errors";
+import { ApplicationError, RequiredFieldApplicationError } from "../../errors";
+import { ApplicationResult, applicationFailure, applicationSuccess } from "../shared";
 
 export class CreateUserDto {
     private constructor(
@@ -16,48 +17,49 @@ export class CreateUserDto {
         public readonly createdBy?: string,
         public readonly updatedBy?: string,
         public readonly deletedBy?: string,
-    ) { }
+    ) {}
 
-    static create(object: { [key: string]: any }): CreateUserDto {
+    static create(object: { [key: string]: any }): ApplicationResult<CreateUserDto> {
         const { firstname, middlename, fatherlastname, motherlastname, username, password, role, createdAt, updatedAt, deletedAt, createdBy, updatedBy, deletedBy } = object;
 
         if (!firstname?.trim()) {
-            throw new ApplicationError('Firstname is required.');
+            return applicationFailure(new RequiredFieldApplicationError("Firstname"));
         }
         if (!fatherlastname?.trim()) {
-            throw new ApplicationError('Father lastname is required.');
+            return applicationFailure(new RequiredFieldApplicationError("Father lastname"));
         }
         if (!motherlastname?.trim()) {
-            throw new ApplicationError('Mother lastname is required.');
+            return applicationFailure(new RequiredFieldApplicationError("Mother lastname"));
         }
         if (!username?.trim()) {
-            throw new ApplicationError('Username is required.');
+            return applicationFailure(new RequiredFieldApplicationError("Username"));
         }
         if (!password?.trim()) {
-            throw new ApplicationError('Password is required.');
+            return applicationFailure(new RequiredFieldApplicationError("Password"));
         }
         if (password.length < 6) {
-            throw new ApplicationError('Password must be at least 6 characters long.');
+            return applicationFailure(new ApplicationError("Password must be at least 6 characters long."));
         }
         if (!role) {
-            throw new ApplicationError('Role is required.');
+            return applicationFailure(new RequiredFieldApplicationError("Role"));
         }
 
-        return new CreateUserDto(
-            firstname.trim(), 
-            middlename?.trim(), 
-            fatherlastname.trim(), 
-            motherlastname.trim(), 
-            username.trim(), 
-            password, 
-            role, 
-            createdAt, 
-            updatedAt, 
-            deletedAt, 
-            createdBy, 
-            updatedBy, 
-            deletedBy
+        return applicationSuccess(
+            new CreateUserDto(
+                firstname.trim(),
+                fatherlastname.trim(),
+                motherlastname.trim(),
+                username.trim(),
+                password,
+                role,
+                middlename?.trim(),
+                createdAt,
+                updatedAt,
+                deletedAt,
+                createdBy,
+                updatedBy,
+                deletedBy
+            )
         );
     }
 }
-

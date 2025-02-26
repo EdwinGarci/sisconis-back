@@ -1,3 +1,4 @@
 export * from './dto/';
-export * from './use-cases';
+export * from './errors';
 export * from './interfaces';
+export * from './use-cases';

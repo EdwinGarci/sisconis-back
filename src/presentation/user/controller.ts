@@ -11,9 +11,13 @@ export class UserController {
         try {
             const createUserDto = CreateUserDto.create(req.body);
             
-            const user = await this.createUserUseCase.execute(createUserDto);
+            const result = await this.createUserUseCase.execute(createUserDto);
 
-            const userResponse = user.toObject(false);
+            if (!result.isSuccess || !result.value) {
+                return res.status(400).json({ error: `Failed to create user ${result.error}` });
+            }
+
+            const userResponse = result.value;
             
             res.status(201).json({message: 'User created successfully', user: userResponse});
         } catch (error) {
