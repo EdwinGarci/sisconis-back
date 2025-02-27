@@ -8,11 +8,11 @@ export class UserRepositoryImpl implements UserRepository {
     async create(user: UserEntity): Promise<UserEntity> {
         return this.userDatasource.createUser(user);
     }
-    
-    async findAll(filters?: { limit?: number; offset?: number; query?: string; }): Promise<{ users: UserEntity[]; total: number; }> {
-        throw new Error("Method not implemented.");
+
+    async findAll(filters?: { limit?: number; cursor?: string; offset?: number; query?: string; }): Promise<{ users: UserEntity[]; nextCursor?: string; total?: number; }> {
+        return this.userDatasource.getUsers(filters);
     }
-    
+        
     async findById(userId: string): Promise<UserEntity | null> {
         throw new Error("Method not implemented.");
     }

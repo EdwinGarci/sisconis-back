@@ -5,7 +5,6 @@ import { LogRepositoryImpl, UserRepositoryImpl } from "../repositories";
 export function createDependencies() {
     const { logDatasource, userDatasource } = createDatasources();
 
-    // Configurar repositorios y casos de uso
     const logRepository = new LogRepositoryImpl(logDatasource);
     const saveLogUseCase = new SaveLogUseCase(logRepository);
 
@@ -13,6 +12,6 @@ export function createDependencies() {
 
     return {
         saveLogUseCase,
-        userRepository, // Puedes agregar más casos de uso relacionados a usuarios aquí
+        userRepository,
     };
 }

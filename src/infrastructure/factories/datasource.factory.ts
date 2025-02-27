@@ -8,7 +8,7 @@ export type DatasourceCollection = {
 };
 
 export function createDatasources(): DatasourceCollection {
-    const dbType = envs.DB_TYPE || "postgres"; // "postgres" por defecto
+    const dbType = envs.DB_TYPE || "postgres";
 
     if (dbType === "mysql") {
         return {
@@ -17,7 +17,6 @@ export function createDatasources(): DatasourceCollection {
         }
     }
 
-    // Por defecto usa PostgreSQL
     return {
         logDatasource: new PostgresLogDatasource(),
         userDatasource: new PostgresUserDatasource(),

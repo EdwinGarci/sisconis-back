@@ -42,9 +42,42 @@ export class PostgresUserDatasource implements UserDatasource {
         }
     }
 
-    getUsers(filters?: { limit?: number; offset?: number; query?: string; }): Promise<{ users: UserEntity[]; total: number; }> {
-        throw new Error("Method not implemented.");
-    }
+    async getUsers(filters?: { limit?: number; cursor?: string; offset?: number; query?: string; }): Promise<{ users: UserEntity[]; nextCursor?: string; total?: number; }> {
+        try {
+            const { limit = 5, cursor, offset, query } = filters || {};
+    
+            const total = offset !== undefined ? await prismaClient.user.count() : undefined;
+    
+            const users = await prismaClient.user.findMany({
+                take: limit,
+                skip: cursor ? 1 : offset ?? 0,
+                cursor: cursor ? { id: cursor } : undefined,
+                orderBy: { createdAt: "asc" },
+                where: query ? { username: { contains: query, mode: "insensitive" } } : undefined,
+            });
+    
+            const nextCursor = users.length === limit ? users[users.length - 1].id : undefined;
+    
+            return {
+                users: users.map(user => 
+                    UserEntity.fromObject({
+                        ...user,
+                        role: user.role as Role,
+                        middlename: user.middlename ?? undefined,
+                        updatedAt: user.updatedAt ?? undefined,
+                        deletedAt: user.deletedAt ?? undefined,
+                        createdBy: user.createdBy ?? undefined,
+                        updatedBy: user.updatedBy ?? undefined,
+                        deletedBy: user.deletedBy ?? undefined,
+                    }).value!
+                ),
+                nextCursor,
+                total,
+            };
+        } catch (error) {
+            throw CustomError.badRequest(`Failed to fetch users: ${(error as any).message}`);
+        }
+    }    
 
     getUserById(userId: string): Promise<UserEntity | null> {
         throw new Error("Method not implemented.");
