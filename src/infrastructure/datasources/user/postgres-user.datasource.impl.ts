@@ -53,7 +53,11 @@ export class PostgresUserDatasource implements UserDatasource {
                 skip: cursor ? 1 : offset ?? 0,
                 cursor: cursor ? { id: cursor } : undefined,
                 orderBy: { createdAt: "asc" },
-                where: query ? { username: { contains: query, mode: "insensitive" } } : undefined,
+                // where: query ? { username: { contains: query, mode: "insensitive" } } : undefined,
+                where: {
+                    deletedAt: null,
+                    username: query ? { contains: query, mode: "insensitive" } : undefined,
+                },
             });
     
             const nextCursor = users.length === limit ? users[users.length - 1].id : undefined;

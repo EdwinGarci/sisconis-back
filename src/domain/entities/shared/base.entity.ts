@@ -1,4 +1,5 @@
 export interface BaseEntityOptions {
+    id: string;
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date;
@@ -8,6 +9,7 @@ export interface BaseEntityOptions {
 }
 
 export abstract class BaseEntity {
+    protected readonly id: string;
     public readonly createdAt: Date;
     public readonly updatedAt?: Date;
     public readonly deletedAt?: Date;
@@ -16,8 +18,9 @@ export abstract class BaseEntity {
     public readonly deletedBy?: string;
 
     constructor(options: BaseEntityOptions) {
-        const { createdAt = new Date(), updatedAt, deletedAt, createdBy, updatedBy, deletedBy } = options;
+        const { id, createdAt = new Date(), updatedAt, deletedAt, createdBy, updatedBy, deletedBy } = options;
 
+        this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
@@ -30,8 +33,13 @@ export abstract class BaseEntity {
         return !this.deletedAt;
     }
 
+    public getId(): string {
+        return this.id;
+    }
+    
     public toBaseObject(): { [key: string]: any } {
         return {
+            id: this.id,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
             deletedAt: this.deletedAt,

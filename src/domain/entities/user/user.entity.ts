@@ -78,10 +78,14 @@ export class UserEntity extends BaseEntity {
 
     public toObject(includePassword = false): { [key: string]: any } {
         const baseObject: { [key: string]: any } = {
-            ...super.toBaseObject(),
+            firstname: this.fullName.firstname,
+            middlename: this.fullName.middlename,
+            fatherlastname: this.fullName.fatherlastname,
+            motherlastname: this.fullName.motherlastname,
             fullName: this.getFullName(),
             username: this.username,
             role: this.role,
+            ...super.toBaseObject(),
         };
 
         if (includePassword) {
@@ -100,6 +104,7 @@ export class UserEntity extends BaseEntity {
         }
 
         return UserEntity.create({
+            id: object.id!,
             firstname: object.firstname!,
             middlename: object.middlename,
             fatherlastname: object.fatherlastname!,
