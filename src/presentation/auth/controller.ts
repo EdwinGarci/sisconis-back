@@ -1,14 +1,19 @@
+import { LoginDto, LoginUseCase } from "../../application";
 import { CustomError } from "../../infrastructure";
 
 export class LoginController {
     constructor(
-        // private readonly loginUseCase: LoginUseCase,
+        private readonly loginUseCase: LoginUseCase,
         // private readonly logoutUseCase: LogoutUseCase
     ) {}
 
     public login = async(req: any, res:any): Promise<void> => {
         try {
-            console.log(`Hola Mundo`)
+            const loginDto = LoginDto.create(req.body);
+
+            const result = await this.loginUseCase.execute(loginDto);
+
+            return result;
         } catch (error) {
             if (error instanceof CustomError) {
                 res.status(error.statusCode).json({ error: error.message });

@@ -20,6 +20,10 @@ export class UserRepositoryImpl implements UserRepository {
     async findByRole(role: Role): Promise<UserEntity[]> {
         throw new Error("Method not implemented.");
     }
+
+    async findByUsername(username: string): Promise<UserEntity[]> {
+        throw new Error("Method not implemented.");
+    }
     
     async update(user: UserEntity): Promise<UserEntity> {
         throw new Error("Method not implemented.");
