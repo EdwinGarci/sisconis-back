@@ -44,10 +44,14 @@ export class ExpressServer {
         const expressRouter = (this.routes as any).getExpressRouter();
         this.app.use(expressRouter);
 
-        // Manejo para SPA: redirige rutas no API a `index.html`.
-        this.app.get(/^\/(?!api).*/, (req, res) => {
-            const indexPath = path.join(this.publicPath, 'index.html');
-            res.sendFile(indexPath);
+        // Manejo para SPA: redirige rutas no API a `index.html`.(ANTERIOR)
+        // this.app.get(/^\/(?!api).*/, (req, res) => {
+        //     const indexPath = path.join(this.publicPath, 'index.html');
+        //     res.sendFile(indexPath);
+        // });
+        // Manejo de rutas inexistentes en JSON
+        this.app.use((req, res, next) => {
+            res.status(404).json({ error: "Ruta no encontrada" });
         });
     }
 

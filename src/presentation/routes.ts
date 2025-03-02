@@ -12,6 +12,6 @@ export class AppRoutes {
         
         // Configurar las rutas
         router.use("/api/users", userRoutes.configureRoutes());
-        // router.use("/api/auth", authRoutes.configureRoutes());
+        router.use("/api/auth", authRoutes.configureRoutes());
     }
 }
