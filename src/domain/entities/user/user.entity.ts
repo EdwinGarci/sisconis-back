@@ -1,5 +1,5 @@
-import { DomainError, RequiredFieldError, InvalidUsernameError, InvalidRoleError } from "../../errors";
-import { DomainResult, Result, domainFailure, domainSuccess } from "../../shared";
+import { RequiredFieldError, InvalidUsernameError, InvalidRoleError } from "../../errors";
+import { DomainResult, domainFailure, domainSuccess } from "../../shared";
 import { FullName } from "../../value-object";
 import { BaseEntity, BaseEntityOptions } from "../shared/base.entity";
 

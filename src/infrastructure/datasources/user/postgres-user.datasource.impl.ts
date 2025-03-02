@@ -60,7 +60,10 @@ export class PostgresUserDatasource implements UserDatasource {
                 },
             });
     
-            const nextCursor = users.length === limit ? users[users.length - 1].id : undefined;
+            // const nextCursor = users.length === limit 
+            const nextCursor = offset === undefined && users.length === limit 
+                ? users[users.length - 1].id 
+                : undefined;
     
             return {
                 users: users.map(user => 

@@ -3,7 +3,11 @@ import { CreateUserDto } from "../../dto";
 import { applicationFailure, applicationSuccess } from "../../dto/shared";
 import { ApplicationError } from "../../errors";
 
-export class CreateUserUseCase {
+export interface CreateUserUseCase {
+    execute(dto: { [key: string]: any }): Promise<any>;
+}
+
+export class CreateUserUseCase implements CreateUserUseCase {
     constructor(
         private readonly userRepository: UserRepository
     ) {}
@@ -25,7 +29,7 @@ export class CreateUserUseCase {
             const createdUser = await this.userRepository.create(user);
             return applicationSuccess(createdUser.toObject(false)); 
         } catch (error) {
-            throw new ApplicationError(`${error}`);
+            throw error instanceof ApplicationError ? error : new ApplicationError(`Error creating user: ${error}`);
         }
     }
 }

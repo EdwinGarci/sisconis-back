@@ -1,4 +1,5 @@
-import { Result } from "../../../domain";
+import { ApplicationError } from "../../errors";
+import { applicationFailure, ApplicationResult, applicationSuccess } from "./application-result";
 
 export class PaginationDto {
     private constructor(
@@ -7,11 +8,18 @@ export class PaginationDto {
         public readonly offset?: number,
     ) {}
 
-    static create(limit: number = 5, cursor?: string, offset?: number): Result<PaginationDto> {
+    static create(params: { limit?: number; cursor?: string; offset?: number } = {}): ApplicationResult<PaginationDto> {
+        const { limit = 5, cursor, offset } = params;
+
         if (!Number.isInteger(limit) || limit < 1) 
-            return Result.failure('Limit must be a positive integer');
-        if (offset !== undefined && (!Number.isInteger(offset) || offset < 0))
-            return Result.failure('Offset must be a non-negative integer');
-        return Result.success(new PaginationDto(limit, cursor, offset));
+            return applicationFailure(new ApplicationError('Limit must be a positive integer.'));
+        
+        if (offset !== undefined && (!Number.isInteger(offset) || offset < 0)) 
+            return applicationFailure(new ApplicationError('Offset must be a non-negative integer.'));
+        
+        if (cursor !== undefined && typeof cursor !== 'string') 
+            return applicationFailure(new ApplicationError('Cursor must be a valid string.'));
+
+        return applicationSuccess(new PaginationDto(limit, cursor, offset));
     }
 }

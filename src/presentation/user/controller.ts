@@ -33,7 +33,7 @@ export class UserController {
 
     public getUsers = async(req: any, res:any): Promise<void> => {
         try {
-            const { page, limit, cursor, offset } = PaginationRequestDto.fromRequest(req);
+            const { page, limit, cursor, offset } = PaginationRequestDto.create(req.query);
 
             const result = await this.getUsersUseCase.execute({ limit, cursor, offset });
 

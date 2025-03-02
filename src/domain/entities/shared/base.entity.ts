@@ -1,5 +1,5 @@
 export interface BaseEntityOptions {
-    id: string;
+    id?: string;
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date;
@@ -9,7 +9,7 @@ export interface BaseEntityOptions {
 }
 
 export abstract class BaseEntity {
-    protected readonly id: string;
+    protected readonly id?: string;
     public readonly createdAt: Date;
     public readonly updatedAt?: Date;
     public readonly deletedAt?: Date;
@@ -33,7 +33,7 @@ export abstract class BaseEntity {
         return !this.deletedAt;
     }
 
-    public getId(): string {
+    public getId(): string | undefined {
         return this.id;
     }
     
