@@ -1,19 +1,18 @@
-import { SaveLogUseCase } from '../application';
-import { envs, ExpressServer, ExpressRouterAdapter } from '../infrastructure';
+import { envs, ExpressServer, ExpressRouterAdapter, createDependencies } from '../infrastructure';
 import { AppRoutes } from './routes';
-
-interface Dependencies {
-    saveLogUseCase: SaveLogUseCase;
-}
 
 export class Server {
     private readonly transportServer: ExpressServer;
 
-    constructor(
-        private readonly dependencies: Dependencies,
-    ) {
+    constructor() {
+        const dependencies = createDependencies();
         const expressRouterAdapter = new ExpressRouterAdapter();
-        AppRoutes.configureRoutes(expressRouterAdapter);
+        AppRoutes.configureRoutes(
+            expressRouterAdapter,
+            dependencies.createUserUseCase,
+            dependencies.getUsersUseCase,
+            dependencies.loginUseCase
+        );
 
         this.transportServer = new ExpressServer({
             port: envs.PORT,

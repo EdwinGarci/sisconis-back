@@ -1,4 +1,3 @@
-import { createDependencies } from './infrastructure';
 import { Server } from './presentation/server';
 
 (async () => {
@@ -6,7 +5,6 @@ import { Server } from './presentation/server';
 })();
 
 async function main() {
-    const dependencies = createDependencies();
-    const server = new Server(dependencies);
+    const server = new Server();
     server.start();
 }

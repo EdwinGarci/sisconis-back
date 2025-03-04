@@ -1,9 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { Role, UserDatasource, UserEntity } from "../../../domain";
 import { CustomError } from "../../errors";
-import { bcryptAdapter } from "../../config";
+import { BcryptAdapter } from "../../config";
 
 const prismaClient = new PrismaClient();
+const bcryptAdapter = new BcryptAdapter();
 
 export class PostgresUserDatasource implements UserDatasource {
     async createUser(user: UserEntity): Promise<UserEntity> {
@@ -23,7 +24,6 @@ export class PostgresUserDatasource implements UserDatasource {
             const userResult = UserEntity.fromObject({ 
                 ...newUser,
                 middlename: newUser.middlename || undefined,
-                // password: hashedPassword,
                 role: newUser.role as Role,
                 updatedAt: newUser.updatedAt || undefined,
                 deletedAt: newUser.deletedAt || undefined,
@@ -90,6 +90,41 @@ export class PostgresUserDatasource implements UserDatasource {
         throw new Error("Method not implemented.");
     }
 
+    findUserByRole(role: Role): Promise<UserEntity | null> {
+        throw new Error("Method not implemented.");
+    }
+
+    async findUserByUsername(username: string): Promise<UserEntity | null> {
+        try {
+            const user = await prismaClient.user.findUnique({
+                where: { username },
+            });
+
+            if (!user) {
+                throw CustomError.notFound(`User with username '${username}' not found.`);
+            }
+
+            const userResult = UserEntity.fromObject({
+                ...user,
+                middlename: user.middlename || undefined,
+                role: user.role as Role,
+                updatedAt: user.updatedAt || undefined,
+                deletedAt: user.deletedAt || undefined,
+                createdBy: user.createdBy || undefined,
+                updatedBy: user.updatedBy || undefined,
+                deletedBy: user.deletedBy || undefined,
+            });
+    
+            if (!userResult.isSuccess) {
+                throw CustomError.badRequest(userResult.error?.message || "Error creating user entity");
+            }
+    
+            return userResult.value!;
+        } catch (error) {
+            throw CustomError.badRequest(`Failed to fetch users: ${(error as any).message}`);
+        }
+    }
+
     updateUser(user: UserEntity): Promise<UserEntity> {
         throw new Error("Method not implemented.");
     }
@@ -97,9 +132,4 @@ export class PostgresUserDatasource implements UserDatasource {
     deleteUser(userId: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
-
-    findUsersByRole(role: Role): Promise<UserEntity[]> {
-        throw new Error("Method not implemented.");
-    }
-    
 }

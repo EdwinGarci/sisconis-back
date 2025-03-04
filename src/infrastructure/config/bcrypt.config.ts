@@ -1,12 +1,13 @@
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
+import { PasswordComparer } from "../../application";
 
-export const bcryptAdapter = {
-    hash: (password: string) => {
+export class BcryptAdapter implements PasswordComparer {
+    hash(password: string): string {
         const salt = genSaltSync();
-        return hashSync(password, salt)
-    },
+        return hashSync(password, salt);
+    }
 
-    compare: (password: string, hashed: string) => {
+    compare(password: string, hashed: string): boolean {
         return compareSync(password, hashed);
     }
 }

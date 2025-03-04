@@ -17,12 +17,12 @@ export class UserRepositoryImpl implements UserRepository {
         throw new Error("Method not implemented.");
     }
     
-    async findByRole(role: Role): Promise<UserEntity[]> {
+    async findByRole(role: Role): Promise<UserEntity | null> {
         throw new Error("Method not implemented.");
     }
 
-    async findByUsername(username: string): Promise<UserEntity[]> {
-        throw new Error("Method not implemented.");
+    async findByUsername(username: string): Promise<UserEntity | null> {
+        return this.userDatasource.findUserByUsername(username);
     }
     
     async update(user: UserEntity): Promise<UserEntity> {
@@ -30,10 +30,6 @@ export class UserRepositoryImpl implements UserRepository {
     }
     
     async softDelete(userId: string): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    
-    async hardDelete(userId: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
 }

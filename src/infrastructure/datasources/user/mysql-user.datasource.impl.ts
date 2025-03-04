@@ -16,6 +16,14 @@ export class MySQLUserDatasource implements UserDatasource {
         throw new Error("Method not implemented.");
     }
 
+    async findUserByRole(role: Role): Promise<UserEntity | null> {
+        throw new Error("Method not implemented.");
+    }
+
+    async findUserByUsername(username: string): Promise<UserEntity | null> {
+        throw new Error("Method not implemented.");
+    }
+
     async updateUser(user: UserEntity): Promise<UserEntity> {
         throw new Error("Method not implemented.");
     }
@@ -23,9 +31,4 @@ export class MySQLUserDatasource implements UserDatasource {
     async deleteUser(userId: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
-
-    async findUsersByRole(role: Role): Promise<UserEntity[]> {
-        throw new Error("Method not implemented.");
-    }
-    
 }

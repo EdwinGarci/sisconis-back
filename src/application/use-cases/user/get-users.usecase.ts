@@ -5,7 +5,7 @@ export interface GetUsersUseCase {
     execute(filters?: PaginationDto): Promise<{ users: any[]; nextCursor?: string; total?: number }>;
 }
 
-export class GetUsers implements GetUsersUseCase {
+export class GetUsersUseCase implements GetUsersUseCase {
     constructor(
         private readonly repository: UserRepository,
     ) {}
