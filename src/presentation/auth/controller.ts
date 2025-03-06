@@ -1,5 +1,6 @@
-import { LoginDto, LoginUseCase } from "../../application";
+import { LoginUseCase } from "../../application";
 import { CustomError } from "../../infrastructure";
+import { LoginDto } from "./dto/login.dto";
 
 export class LoginController {
     constructor(
@@ -13,7 +14,7 @@ export class LoginController {
 
             const result = await this.loginUseCase.execute(loginDto);
 
-            return result;
+            res.status(200).json(result);
         } catch (error) {
             if (error instanceof CustomError) {
                 res.status(error.statusCode).json({ error: error.message });

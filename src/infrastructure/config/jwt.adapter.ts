@@ -12,7 +12,7 @@ export class JwtAdapter implements JwtAdapter {
 
     async generateToken(payload: any, duration: string = '1h'): Promise<string> {
         return new Promise((resolve, reject) => {
-            jwt.sign(payload, this.secret, { expiresIn: duration }, (err, token) => {
+            jwt.sign(payload, this.secret, { expiresIn: 3600 }, (err, token) => {
                 if (err) return reject(err);
                 if (!token) return reject(new Error('Failed to generate token'));
                 resolve(token);
