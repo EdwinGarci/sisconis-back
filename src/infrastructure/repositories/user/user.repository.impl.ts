@@ -14,7 +14,7 @@ export class UserRepositoryImpl implements UserRepository {
     }
         
     async findById(userId: string): Promise<UserEntity | null> {
-        throw new Error("Method not implemented.");
+        return this.userDatasource.getUserById(userId);
     }
     
     async findByRole(role: Role): Promise<UserEntity | null> {

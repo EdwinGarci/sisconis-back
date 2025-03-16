@@ -1,24 +1,22 @@
 import { envs } from "../config";
-import { LogDatasource, UserDatasource } from "../../domain";
-import { MySQLLogDatasource, MySQLUserDatasource, PostgresLogDatasource, PostgresUserDatasource } from "../datasources";
 
 export type DatasourceCollection = {
-    logDatasource: LogDatasource;
-    userDatasource: UserDatasource;
+    logDatasource: string;
+    userDatasource: string;
 };
 
-export function createDatasources(): DatasourceCollection {
+export function getDatasourceBindings(): DatasourceCollection {
     const dbType = envs.DB_TYPE || "postgres";
 
     if (dbType === "mysql") {
         return {
-            logDatasource: new MySQLLogDatasource(),
-            userDatasource: new MySQLUserDatasource(),
+            logDatasource: "mysqlLogDatasource",
+            userDatasource: "mysqlUserDatasource",
         }
     }
 
     return {
-        logDatasource: new PostgresLogDatasource(),
-        userDatasource: new PostgresUserDatasource(),
+        logDatasource: "postgresLogDatasource",
+        userDatasource: "postgresUserDatasource",
     };
 }

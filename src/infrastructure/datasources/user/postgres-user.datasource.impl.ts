@@ -3,14 +3,16 @@ import { Role, UserDatasource, UserEntity } from "../../../domain";
 import { CustomError } from "../../errors";
 import { BcryptAdapter } from "../../config";
 
-const prismaClient = new PrismaClient();
-const bcryptAdapter = new BcryptAdapter();
-
 export class PostgresUserDatasource implements UserDatasource {
+    constructor(
+        private readonly prismaClient: PrismaClient,
+        private readonly bcryptAdapter: BcryptAdapter
+    ) {}
+
     async createUser(user: UserEntity): Promise<UserEntity> {
         try {
-            const hashedPassword = bcryptAdapter.hash(user.getPassword());
-            const newUser = await prismaClient.user.create({
+            const hashedPassword = this.bcryptAdapter.hash(user.getPassword());
+            const newUser = await this.prismaClient.user.create({
                 data: {
                     firstname: user.fullName.firstname,
                     middlename: user.fullName.middlename ?? null,
@@ -46,9 +48,9 @@ export class PostgresUserDatasource implements UserDatasource {
         try {
             const { limit = 5, cursor, offset, query } = filters || {};
     
-            const total = offset !== undefined ? await prismaClient.user.count() : undefined;
+            const total = offset !== undefined ? await this.prismaClient.user.count() : undefined;
     
-            const users = await prismaClient.user.findMany({
+            const users = await this.prismaClient.user.findMany({
                 take: limit,
                 skip: cursor ? 1 : offset ?? 0,
                 cursor: cursor ? { id: cursor } : undefined,
@@ -86,8 +88,33 @@ export class PostgresUserDatasource implements UserDatasource {
         }
     }    
 
-    getUserById(userId: string): Promise<UserEntity | null> {
-        throw new Error("Method not implemented.");
+    async getUserById(userId: string): Promise<UserEntity | null> {
+        const user = await this.prismaClient.user.findUnique({
+            where: {
+                id: userId,
+            }
+        });
+        
+        if (!user) {
+            throw CustomError.notFound(`User with id '${userId}' not found.`);
+        }
+
+        const userResult = UserEntity.fromObject({
+            ...user,
+            middlename: user.middlename || undefined,
+            role: user.role as Role,
+            updatedAt: user.updatedAt || undefined,
+            deletedAt: user.deletedAt || undefined,
+            createdBy: user.createdBy || undefined,
+            updatedBy: user.updatedBy || undefined,
+            deletedBy: user.deletedBy || undefined,
+        });
+
+        if (!userResult.isSuccess) {
+            throw CustomError.badRequest(userResult.error?.message || "Error creating user entity");
+        }
+
+        return userResult.value!;
     }
 
     findUserByRole(role: Role): Promise<UserEntity | null> {
@@ -96,7 +123,7 @@ export class PostgresUserDatasource implements UserDatasource {
 
     async findUserByUsername(username: string): Promise<UserEntity | null> {
         try {
-            const user = await prismaClient.user.findUnique({
+            const user = await this.prismaClient.user.findUnique({
                 where: { username },
             });
 
