@@ -1,39 +1,44 @@
 ## GitFlow Simplificado para SISCONIS
 
-Este proyecto utiliza una versión simplificada de GitFlow que incluye las ramas `main`, `develop` y `feature`.
+Este proyecto adopta una versión simplificada de GitFlow que utiliza las ramas `main`, `develop`, `integration` y `feature/*`.
 
-### Estructura de Ramas:
+### Estructura de Ramas
 
-* `main`: Solo versiones estables, listas para producción.
-* `develop`: Integración de todas las funcionalidades que están listas para ser probadas.
-* `feature/*`: Nuevas funcionalidades, refactorizaciones o fixes específicos.
+* `main`: Contiene únicamente versiones estables y listas para producción.
+* `develop`: Rama base estable que incluye funcionalidades preparadas para pruebas finales.
+* `integration`: Sirve como punto de integración de múltiples ramas `feature/*`, donde se resuelven errores antes de ser promovidas a `develop`.
+* `feature/*`: Ramas destinadas al desarrollo activo de nuevas funcionalidades, refactorizaciones o correcciones específicas.
 
 ---
 
 ### Creación de Ramas
 
-1. **Crear la rama `develop`:**
+1. **Creación de las ramas `develop` e `integration`**:
 
 ```bash
 # Asegurarse de estar en main
 git checkout main
 
-# Crear y cambiar a develop
+# Crear develop
 git checkout -b develop
 
-# Subirla al remoto
+# Crear integration desde develop
+git checkout -b integration
+
+# Subirlas al repositorio remoto
 git push -u origin develop
+git push -u origin integration
 ```
 
 ---
 
-2. **Crear una rama `feature`**
+2. **Creación de una rama `feature`**
 
-Todas las ramas `feature` deben crearse a partir de `develop`. Se recomienda la siguiente estructura:
+Todas las ramas `feature` deben crearse a partir de `integration`. Se recomienda seguir la siguiente estructura:
 
 ```bash
 # Crear una nueva feature
-git checkout -b feature/<nombre> develop
+git checkout -b feature/<nombre> integration
 ```
 
 Ejemplos de nombres:
@@ -72,7 +77,7 @@ Ejemplos:
 
 ### Integración de Feature a Develop
 
-Cuando una `feature` está lista, debe integrarse a `develop`:
+Cuando una rama `feature` está lista, debe integrarse a `develop` siguiendo estos pasos:
 
 1. Cambiar a `develop`:
 
@@ -80,13 +85,13 @@ Cuando una `feature` está lista, debe integrarse a `develop`:
 git checkout develop
 ```
 
-2. Hacer pull de los últimos cambios:
+2. Obtener los últimos cambios:
 
 ```bash
 git pull
 ```
 
-3. Hacer el merge:
+3. Realizar el merge:
 
 ```bash
 git merge feature/<nombre>
@@ -100,57 +105,57 @@ git push origin develop
 
 ---
 
-### Consideraciones Finales:
+### Flujo de Trabajo Recomendado para Ramas Feature
 
-### Flujo de trabajo recomendado para ramas feature
-
-1. Crear la rama `feature` basada en `develop`:
+1. Crear la rama `feature` desde `integration`:
 
 ```bash
-git checkout -b feature/<nombre> develop
+git checkout -b feature/<nombre> integration
 ```
 
-Ejemplo para trabajar en los modelos del domain:
+2. Trabajar libremente en la rama, incluyendo pruebas, correcciones y ajustes.
+
+3. Una vez finalizada, integrar la `feature` a `integration`:
 
 ```bash
-git checkout -b feature/domain-models develop
-```
-
-2. Al finalizar el trabajo, integrar los cambios a `develop`:
-
-```bash
-# Cambiar a develop
-git checkout develop
-
-# Actualizar develop
+git checkout integration
 git pull
+git merge feature/<nombre>
+git push origin integration
+```
 
-# Mergear la rama feature
-git merge feature/domain-models
+4. Eliminar la rama:
 
-# Empujar los cambios a develop
+```bash
+git branch -d feature/<nombre>
+git push origin --delete feature/<nombre>
+```
+
+5. Cuando `integration` esté estable, fusionarla con `develop`:
+
+```bash
+git checkout develop
+git pull
+git merge integration
 git push origin develop
 ```
 
-3. Eliminar la rama `feature` local y remotamente:
+6. Finalmente, al validar todo, pasar `develop` a `main`:
 
 ```bash
-# Localmente
-git branch -d feature/domain-models
-
-# Remotamente
-git push origin --delete feature/domain-models
+git checkout main
+git pull
+git merge develop
+git push origin main
 ```
 
-4. Crear la nueva rama `feature` para el siguiente módulo o capa:
+---
 
-```bash
-git checkout -b feature/domain-repositories develop
-```
+### Consideraciones Finales
 
-Este flujo asegura mantener `develop` actualizado sin ramas innecesarias flotando en el repositorio.
+* Las ramas `feature/*` son un entorno libre para desarrollar y experimentar.
+* La rama `integration` actúa como una sala de pruebas antes de llegar a `develop`.
+* `develop` representa una base segura previa a producción.
+* La rama `main` debe reservarse exclusivamente para versiones finales listas para producción.
 
-* Se deben mantener los nombres de las ramas claros y concisos.
-* Se deben realizar commits pequeños y específicos.
-* Se debe documentar los cambios en el `docs/git-flow.md` para mantener un registro del flujo.
-* Se debe revisar constantemente las ramas para evitar conflictos grandes al hacer merges.
+Este flujo busca mantener orden y claridad, ideal para un entorno con un solo desarrollador que trabaje con mentalidad de equipo.

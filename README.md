@@ -113,5 +113,8 @@ Actualmente, este proyecto está en desarrollo. Próximos pasos:
 
 Este proyecto está bajo la Licencia MIT. Consulta el archivo LICENSE para más detalles.
 
-
 ¡Gracias por visitar este repositorio! Si tienes alguna sugerencia, no dudes en abrir un issue o contactarme.
+
+### Filosofía
+
+"Automatiza y organiza como si fueras un equipo de 5, pero actúa con la velocidad de uno solo."
