@@ -1,0 +1,9 @@
+{
+    "entryPoints": ["src"],
+    "out": "docs/typedoc",
+    "excludePrivate": true,
+    "excludeExternals": true,
+    "includeVersion": true,
+    "tsconfig": "./tsconfig.json",
+    "plugin": ["typedoc-plugin-markdown"]
+}
