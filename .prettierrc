@@ -5,7 +5,7 @@
     "printWidth": 100,
     "tabWidth": 4,
     "useTabs": false,
-    "bracketSpacing": true,   
+    "bracketSpacing": true,
     "bracketSameLine": false,
     "arrowParens": "avoid",
     "endOfLine": "lf",
