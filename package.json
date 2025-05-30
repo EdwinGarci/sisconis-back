@@ -14,10 +14,11 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "docs": "typedoc"
   },
   "keywords": [],
-  "author": "",
+  "author": "Fidel García",
   "license": "ISC",
   "description": "",
   "devDependencies": {
