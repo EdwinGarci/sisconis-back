@@ -9,14 +9,14 @@ export abstract class UserRepository {
      * Retrieves all users from the repository.
      * @returns A promise that resolves to an array of UserEntity objects.
      */
-    abstract findAll(): Promise<UserEntity[]>;
+    abstract index(): Promise<UserEntity[]>;
 
     /**
      * Retrieves a user by their ID.
      * @param id The ID of the user to retrieve.
      * @returns A promise that resolves to a UserEntity object.
      */
-    abstract findById(id: number): Promise<UserEntity>;
+    abstract find(id: number): Promise<UserEntity | null>;
 
     /**
      * Creates a new user and returns the created user.
@@ -29,6 +29,7 @@ export abstract class UserRepository {
      * Updates an existing user and returns the updated user.
      * @param user - User data to update an existing user.
      * @returns The updated user.
+     * @throws {Error} If the user is not found.
      */
     abstract update(user: UserEntity): Promise<UserEntity>;
 
@@ -36,6 +37,7 @@ export abstract class UserRepository {
      * Deletes a user by their ID.
      * @param id The ID of the user to delete.
      * @returns A promise that resolves when the user is deleted.
+     * @throws {Error} If the user is not found.
      */
     abstract delete(id: number): Promise<void>;
 }
