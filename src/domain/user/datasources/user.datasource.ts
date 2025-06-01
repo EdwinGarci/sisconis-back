@@ -1,4 +1,4 @@
-import { UserEntity } from "../entities/user.entity";
+import { UserEntity } from '../entities/user.entity';
 
 /**
  * An abstract datasource interface for managing user entities.

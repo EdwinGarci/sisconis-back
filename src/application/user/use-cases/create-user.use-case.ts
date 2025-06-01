@@ -2,22 +2,25 @@ import { UserEntity } from '@domain/user/entities/user.entity';
 import { CreateUserInput } from '../dto/create-user.input';
 import { UserRepository } from '@domain/user/repositories/user.repository';
 import { UserAlreadyExistsError } from '@domain/user/errors/user.errors';
-import { Either, left, right } from '@shared/core/either';
+import { Result } from '@shared/core/result';
 
-export type CreateUserResult = Either<UserAlreadyExistsError, UserEntity>;
+export type CreateUserResult = Result<UserEntity, UserAlreadyExistsError>;
 
 export class CreateUserUseCase {
     constructor(private readonly userRepository: UserRepository) {}
 
     async execute(input: CreateUserInput): Promise<CreateUserResult> {
-        const user = UserEntity.create(input);
+        const user = UserEntity.create({
+            ...input,
+            id: Date.now(), // Generate a temporary ID
+        });
 
         if (user.isFailure) {
-            return left(user.value);
+            return user;
         }
 
         await this.userRepository.create(user.value);
 
-        return right(user.value);
+        return user;
     }
 }

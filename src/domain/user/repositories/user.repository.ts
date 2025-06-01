@@ -1,7 +1,7 @@
-import { UserEntity } from "../entities/user.entity";
+import { UserEntity } from '../entities/user.entity';
 
 /**
- * An abstract repository interface for managing user entities. 
+ * An abstract repository interface for managing user entities.
  * Provides methods to perform CRUD operations on users.
  */
 export abstract class UserRepository {

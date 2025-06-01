@@ -10,7 +10,7 @@ export function toStr(value: unknown): string | null {
 
     if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
         if (value === false) return null;
-        
+
         const str = String(value).trim();
         return str.length === 0 ? null : str;
     }
@@ -24,9 +24,9 @@ export function toStr(value: unknown): string | null {
                 return null;
             }
         }
-        
-        if ('value' in value) {
-            const str = String((value as any).value).trim();
+
+        if ('value' in value && typeof value === 'object') {
+            const str = String((value as { value: unknown }).value).trim();
             return str.length === 0 ? null : str;
         }
     }
@@ -41,7 +41,7 @@ export function toInt(value: unknown): number | null {
 
     const str = toStr(value);
 
-    if(str !== null && !isNaN(Number(str)) && str.trim() !== '') {
+    if (str !== null && !isNaN(Number(str)) && str.trim() !== '') {
         return parseInt(str, 10);
     }
 
@@ -52,7 +52,7 @@ export function toInt(value: unknown): number | null {
 function hasCustomToString(obj: object): obj is { toString(): string } {
     return (
         'toString' in obj &&
-        typeof (obj as any).toString === 'function' &&
-        (obj as any).toString !== Object.prototype.toString
+        typeof obj.toString === 'function' &&
+        obj.toString !== Object.prototype.toString
     );
 }
