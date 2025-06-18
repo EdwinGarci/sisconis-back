@@ -1,6 +1,6 @@
 services:
   db:
-    container_name: postgres_database
+    container_name: postgres_sisconis
     image: postgres:15.10-alpine
     restart: always
     environment:
