@@ -19,7 +19,9 @@ export class CreateUserUseCase {
             return user;
         }
 
-        await this.userRepository.create(user.value);
+        const userInstance = user.getValue();
+
+        await this.userRepository.create(userInstance);
 
         return user;
     }
