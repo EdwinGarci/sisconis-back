@@ -10,7 +10,7 @@ export class UserRoutes implements RouteHandlerInterface {
     ) {}
 
     configureRoutes(): void {
-        // this.router.post('/', this.controller.create.bind(this.controller) as RouteHandler);
+        this.router.post('/', this.controller.create.bind(this.controller) as RouteHandler);
 
         this.router.get('/', this.controller.index.bind(this.controller) as RouteHandler);
 
