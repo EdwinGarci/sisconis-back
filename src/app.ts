@@ -1,10 +1,14 @@
-import { Server } from "@presentation/server";
+import { ExpressServer } from '@infrastructure/server/express.server';
+import { createAppContainer } from './infrastructure/container';
+
+async function main(): Promise<void> {
+    const container = createAppContainer();
+
+    const server = container.resolve<ExpressServer>('expressServer');
+
+    await server.start();
+}
 
 (async () => {
-    main();
+    await main();
 })();
-
-async function main() {
-    const server = new Server();
-    server.start();
-}

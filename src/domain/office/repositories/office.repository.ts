@@ -1,4 +1,4 @@
-import { OfficeEntity } from "../entities/office.entity";
+import { OfficeEntity } from '../entities/office.entity';
 
 export abstract class OfficeRepository {
     abstract findAll(): Promise<OfficeEntity[]>;
